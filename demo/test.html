@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1.0,maximum-scale=1.0,minimum-sacle=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1">
+<title>list-row-group</title>
+<link rel="stylesheet" type="text/css" href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.bootcss.com/font-awesome/3.2.1/css/font-awesome.min.css">
+<script src="https://cdn.bootcss.com/angular.js/1.5.7/angular.min.js"></script>
+<link rel="stylesheet" type="text/css" href="../styles/list-row-group.css">
+<script src="../scripts/list-row-group.min.js"></script>
+<style>
+.jumbotron{margin:20px 0;}
+</style>
+</head>
+<body>
+	<div class="form-horizontal" ng-app="myApp" ng-controller="myCtrl">
+		<div class="container-fluid">
+			<div class="jumbotron">
+				<h1>实例1</h1>
+				<p>左(单)/右(多)选列表，同步保存/异步删除数据</p>
+				<p><a class="btn btn-default btn-lg" href="" ng-click="groupgoods.search()">加载数据到可选商品</a> <a class="btn btn-default btn-lg" href="" ng-click="groupgoods.save()">保存该商品的配件</a></p>
+
+				<list-row-group value="goods_id" text="goods_name" add-item="groupgoods.addItem(items)" drop-item="groupgoods.dropItem(values)">
+					<list-group-source header="可选商品" source="groupgoods.sourcelist" selected="groupgoods.selected(item,index,active)"></list-group-source>
+					<form-group-extra>
+						<div class="form-group">
+							<input class="form-control" type="text" placeholder="价格" ng-model="groupgoods.price">
+						</div>
+					</form-group-extra>
+					<list-group-target header="该商品的配件" source="groupgoods.targetlist" multiple="true"></list-group-target>
+				</list-row-group>
+			</div>
+			
+			<div class="jumbotron">
+				<h1>实例2</h1>
+				<p>左/右多选列表，异步保存/异步删除数据</p>
+				<p><a class="btn btn-default btn-lg" href="" ng-click="linkgoods.search()">加载数据到可选商品</a></p>
+
+				<list-row-group value="goods_id" text="goods_name" add-item="linkgoods.addItem(items)" drop-item="linkgoods.dropItem(values)">
+					<list-group-source header="可选商品" source="linkgoods.sourcelist" multiple="true"></list-group-source>
+					<form-group-extra>
+						<div class="form-group">
+							<div class="radio" ng-repeat="item in linkgoods.singlelist">
+								<label><input type="radio" value="{{item.value}}" ng-model="linkgoods.isSingle"> {{item.text}}</label>
+							</div>
+						</div>
+					</form-group-extra>
+					<list-group-target header="该商品关联的商品" source="linkgoods.targetlist" multiple="true"></list-group-target>
+				</list-row-group>
+			</div>
+
+		</div>
+	</div>
+
+	<script>
+		var app = angular.module('myApp', ['listRowGroup']);
+		app.controller('myCtrl', ['$scope','$http','$q',function($scope,$http,$q) {
+
+			$scope.groupgoods = {
+				price:'',
+				sourcelist:[],
+				targetlist:[],
+				search:function(){
+					$http.get('../data/list.json')
+					.success(function(data){
+						$scope.groupgoods.sourcelist = data;
+					});
+				},
+				save:function(){
+					alert(angular.toJson($scope.groupgoods.targetlist));
+				},
+				selected:function(item,index,active){
+					if(active){
+						$scope.groupgoods.price = item.shop_price.toFixed(2);
+					}
+				},
+				addItem:function(items){
+					angular.forEach(items,function(item){
+						var price = (parseFloat($scope.groupgoods.price) || 0.00).toFixed(2);
+						item.goods_name = item.goods_name + ' -- [' + price + ']';
+						item.goods_price = price;
+					});
+				},
+				dropItem:function(values){
+					var deferred = $q.defer();
+					
+					$http.get('../data/delete.json')
+					.success(function(data){
+						alert('删除的id: ' + values);
+						deferred.resolve(data);
+					})
+					.error(function(msg){
+						deferred.reject(msg);
+					});
+
+					return deferred.promise;
+				}
+			};
+
+			$scope.linkgoods = {
+				singlelist:[
+					{text:'单向关联',value:1},
+					{text:'双向关联',value:0}
+				],
+				sourcelist:[],
+				targetlist:[],
+				isSingle:1,
+				search:function(){
+					$http.get('../data/list.json')
+					.success(function(data){
+						$scope.linkgoods.sourcelist = data;
+					});
+				},
+				addItem:function(items){
+
+					var deferred = $q.defer();
+
+					var map = {
+						0:$scope.linkgoods.singlelist[1],
+						1:$scope.linkgoods.singlelist[0],
+					};
+
+					angular.forEach(items,function(item){
+						item.goods_name = item.goods_name + ' -- [' + map[$scope.linkgoods.isSingle].text + ']';
+						item.is_single = $scope.linkgoods.isSingle;
+					});
+
+					$http.get('../data/insert.json')
+					.success(function(data){
+						alert(angular.toJson(items));
+						deferred.resolve(data);
+					})
+					.error(function(msg){
+						deferred.reject(msg);
+					});
+
+					return deferred.promise;	
+				},
+				dropItem:function(values){
+					var deferred = $q.defer();
+					
+					$http.get('../data/delete.json')
+					.success(function(data){
+						alert('删除的id: ' + values);
+						deferred.resolve(data);
+					})
+					.error(function(msg){
+						deferred.reject(msg);
+					});
+
+					return deferred.promise;
+				}
+			};
+
+		}]);
+</script>
+</body>
+</html>
