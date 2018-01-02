@@ -101,12 +101,12 @@
 
 			$scope.linkgoods = {
 				singlelist:[
-					{text:'单向关联',value:1},
-					{text:'双向关联',value:0}
+					{text:'单向关联',value:0},
+					{text:'双向关联',value:1}
 				],
 				sourcelist:[],
 				targetlist:[],
-				isSingle:1,
+				isSingle:0,
 				search:function(){
 					$http.get('../data/list.json')
 					.success(function(data){
@@ -117,13 +117,8 @@
 
 					var deferred = $q.defer();
 
-					var map = {
-						0:$scope.linkgoods.singlelist[1],
-						1:$scope.linkgoods.singlelist[0],
-					};
-
 					angular.forEach(items,function(item){
-						item.goods_name = item.goods_name + ' -- [' + map[$scope.linkgoods.isSingle].text + ']';
+						item.goods_name = item.goods_name + ' -- [' + vm.linkgoods.singlelist[$scope.linkgoods.isSingle].text + ']';
 						item.is_single = $scope.linkgoods.isSingle;
 					});
 
