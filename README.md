@@ -1,7 +1,7 @@
 # list-row-group
 angular组件 - 模拟两个多选select(multiple左右)添加、删除选项和取值
 
-##演示地址
+## 演示地址
 http://gongshunkai.github.io/demo/list-row-group/demo.html
 
 ## 配置
