@@ -213,11 +213,11 @@
                     listRowGroupCtrl.setSource('data',scope.source);  
                 });
 
-                scope.$dblSelected = function(index){
+                scope.$dblSelected = function(i){
                     angular.forEach(scope.source,function(item,index){
                         scope.active[index] = false;
                     });
-                    scope.active[index] = true;
+                    scope.active[i] = true;
                     listRowGroupCtrl.addItem();
                 };
 
@@ -240,11 +240,11 @@
                     listRowGroupCtrl.setTarget('data',scope.source);
                 });
 
-                scope.$dblSelected = function(index){
+                scope.$dblSelected = function(i){
                     angular.forEach(scope.source,function(item,index){
                         scope.active[index] = false;
                     });
-                    scope.active[index] = true;
+                    scope.active[i] = true;
                     listRowGroupCtrl.dropItem();
                 };
 
