@@ -118,7 +118,7 @@
 					var deferred = $q.defer();
 
 					angular.forEach(items,function(item){
-						item.goods_name = item.goods_name + ' -- [' + vm.linkgoods.singlelist[$scope.linkgoods.isSingle].text + ']';
+						item.goods_name = item.goods_name + ' -- [' + $scope.linkgoods.singlelist[$scope.linkgoods.isSingle].text + ']';
 						item.is_single = $scope.linkgoods.isSingle;
 					});
 
