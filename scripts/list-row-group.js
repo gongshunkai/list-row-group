@@ -105,6 +105,14 @@
                     $scope['showDoubleAngle' + type] = mode;
                 };
 
+                this.addItem = function(type){
+                    $scope.$addItem(type);
+                };
+
+                this.dropItem = function(type){
+                    $scope.$dropItem(type);
+                };
+
                 $scope.$addItem = function(type){
                     
                     var cache = {};
@@ -205,6 +213,14 @@
                     listRowGroupCtrl.setSource('data',scope.source);  
                 });
 
+                scope.$dblSelected = function(index){
+                    angular.forEach(scope.source,function(item,index){
+                        scope.active[index] = false;
+                    });
+                    scope.active[index] = true;
+                    listRowGroupCtrl.addItem();
+                };
+
                 listGroup.link(scope, element, attrs, listRowGroupCtrl);
             }
         });
@@ -223,6 +239,14 @@
                 scope.$watch('source',function(){
                     listRowGroupCtrl.setTarget('data',scope.source);
                 });
+
+                scope.$dblSelected = function(index){
+                    angular.forEach(scope.source,function(item,index){
+                        scope.active[index] = false;
+                    });
+                    scope.active[index] = true;
+                    listRowGroupCtrl.dropItem();
+                };
 
                 listGroup.link(scope, element, attrs, listRowGroupCtrl);
             }
@@ -259,7 +283,7 @@
         "    <div class=\"list-group-wrapper\">\n" +
         "      <div class=\"list-group-header\">{{header}}</div>\n" +
         "        <div class=\"list-group\">\n" +
-        "          <a href=\"\" class=\"list-group-item\" ng-class=\"{'list-group-item-warning':active[$index]}\" ng-click=\"$selected($index)\" ng-repeat=\"item in source\">{{item[text]}}</a>\n" +
+        "          <a href=\"\" class=\"list-group-item\" ng-class=\"{'list-group-item-warning':active[$index]}\" ng-click=\"$selected($index)\" ng-Dblclick=\"$dblSelected($index)\" ng-repeat=\"item in source\">{{item[text]}}</a>\n" +
         "      </div>\n" +
         "    </div>\n" +
         "");
