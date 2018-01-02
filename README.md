@@ -1,16 +1,19 @@
 # list-row-group
 angular组件 - 模拟两个多选select(multiple左右)添加、删除选项和取值
 
+##演示地址：http://gongshunkai.github.io/demo/list-row-group/demo.html
+
 ## 配置
-在html头部引用：  
+1. 组件依赖bootstrap3.x、font-awesome3.x、angular1.x
+2. 在html头部添加引用：  
 ```
-    list-row-group.css
-    list-row-group.min.js
+<link rel="stylesheet" type="text/css" href="list-row-group.css">
+<script src="list-row-group.min.js"></script>
 ```
 ## 使用
 list-row-group的属性和方法：
-value 映射数据源id字段名
-text 映射数据源文本字段名
+value 映射数据源id字段名。
+text 映射数据源文本字段名。
 template-url 模板地址
 add-item 添加项目的回调方法，该方法有1个参数，包含：待添加项的数据集合，如需处理异步请求，请返回一个promise对象。
 drop-item 删除项目的回调方法，该方法有1个参数，包含：待删除项的id数组，如需处理异步请求，请返回一个promise对象。
