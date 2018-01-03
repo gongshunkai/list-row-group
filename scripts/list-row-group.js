@@ -33,13 +33,13 @@
         replace:true,
         scope:{
             header:'@',
+            text:'@',
+            value:'@',
             source:'=',
             multiple:'=',
             selected:'&'
         },
         link:function(scope, element, attrs, listRowGroupCtrl){
-
-            scope.text = listRowGroupCtrl.getText();
 
             scope.$selected = function(i){
 
@@ -78,8 +78,6 @@
             },
             replace:true,
             scope:{
-                text:'@',
-                value:'@',
                 addItem:'&',
                 dropItem:'&'
             },
@@ -119,13 +117,13 @@
                     var items = [];
 
                     angular.forEach(target.data,function(item){
-                        var id = item[$scope.value];
+                        var id = item[target.val];
                         cache[id] = true;
                     });
 
                     angular.forEach(source.data,function(item,index){
 
-                        var id = item[$scope.value];
+                        var id = item[source.val];
                             item = angular.copy(item);
 
                         if((function(){
@@ -168,7 +166,7 @@
 
                     angular.forEach(target.data,function(item,index){
                         if(type == 'all' || target.act[index]){
-                            values.push(target.data[index][$scope.value]);
+                            values.push(target.data[index][target.val]);
                             indexes.unshift(index);
                         }
                     });
@@ -204,6 +202,7 @@
             link:function(scope, element, attrs, listRowGroupCtrl){
 
                 listRowGroupCtrl.setSource('act',scope.active = []);
+                listRowGroupCtrl.setSource('val',scope.value);
                 listRowGroupCtrl.setDoubleAngle('Right',scope.multiple);
 
                 scope.$watch('source',function(){       
@@ -234,6 +233,7 @@
             link:function(scope, element, attrs, listRowGroupCtrl){
 
                 listRowGroupCtrl.setTarget('act',scope.active = []);
+                listRowGroupCtrl.setTarget('val',scope.value);
                 listRowGroupCtrl.setDoubleAngle('Left',scope.multiple);
                 
                 scope.$watch('source',function(){

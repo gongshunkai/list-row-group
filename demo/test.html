@@ -22,14 +22,14 @@
 				<p>左(单)/右(多)选列表，同步保存/异步删除数据</p>
 				<p><a class="btn btn-default btn-lg" href="" ng-click="groupgoods.search()">加载数据到可选商品</a> <a class="btn btn-default btn-lg" href="" ng-click="groupgoods.save()">保存该商品的配件</a></p>
 
-				<list-row-group value="goods_id" text="goods_name" add-item="groupgoods.addItem(items)" drop-item="groupgoods.dropItem(values)">
-					<list-group-source header="可选商品" source="groupgoods.sourcelist" selected="groupgoods.selected(item,index,active)"></list-group-source>
+				<list-row-group add-item="groupgoods.addItem(items)" drop-item="groupgoods.dropItem(values)">
+					<list-group-source header="可选商品" value="goods_id" text="goods_name" source="groupgoods.sourcelist" selected="groupgoods.selected(item,index,active)"></list-group-source>
 					<form-group-extra>
 						<div class="form-group">
 							<input class="form-control" type="text" placeholder="价格" ng-model="groupgoods.price">
 						</div>
 					</form-group-extra>
-					<list-group-target header="该商品的配件" source="groupgoods.targetlist" multiple="true"></list-group-target>
+					<list-group-target header="该商品的配件" value="goods_id" text="goods_name" source="groupgoods.targetlist" multiple="true"></list-group-target>
 				</list-row-group>
 			</div>
 			
@@ -38,8 +38,8 @@
 				<p>左/右多选列表，异步保存/异步删除数据</p>
 				<p><a class="btn btn-default btn-lg" href="" ng-click="linkgoods.search()">加载数据到可选商品</a></p>
 
-				<list-row-group value="goods_id" text="goods_name" add-item="linkgoods.addItem(items)" drop-item="linkgoods.dropItem(values)">
-					<list-group-source header="可选商品" source="linkgoods.sourcelist" multiple="true"></list-group-source>
+				<list-row-group add-item="linkgoods.addItem(items)" drop-item="linkgoods.dropItem(values)">
+					<list-group-source header="可选商品" value="goods_id" text="goods_name" source="linkgoods.sourcelist" multiple="true"></list-group-source>
 					<form-group-extra>
 						<div class="form-group">
 							<div class="radio" ng-repeat="item in linkgoods.singlelist">
@@ -47,7 +47,7 @@
 							</div>
 						</div>
 					</form-group-extra>
-					<list-group-target header="该商品关联的商品" source="linkgoods.targetlist" multiple="true"></list-group-target>
+					<list-group-target header="该商品关联的商品" value="goods_id" text="goods_name" source="linkgoods.targetlist" multiple="true"></list-group-target>
 				</list-row-group>
 			</div>
 
