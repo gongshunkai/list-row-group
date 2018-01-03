@@ -79,44 +79,53 @@
             },
             controller:['$scope',function($scope){
 
-                var source = {};
+                var vm = this;
 
-                var target = {};
+                //setSource setTarget
+                angular.forEach(['Source','Target'],function(n){
+                    vm['set' + n] = function(key,value){
+                        if(typeof key === 'object'){
+                            angular.forEach(key,function(v,k){
+                                vm['set' + n](k,v);
+                            });
+                        }else{
+                            $scope['$' + n.toLowerCase()][key] = value;
+                        }
+                    };
+                });
 
-                this.setSource = function(key,value){
-                    source[key] = value;
-                };
+                //addItem dropItem
+                angular.forEach(['add','drop'],function(n){
+                    vm[n + 'Item'] = function(type){
+                        $scope['$' + n + 'Item'](type);
+                    };
+                });
 
-                this.setTarget = function(key,value){
-                    target[key] = value;
-                };
+                //setDoubleAngleLeft setDoubleAngleRight
+                angular.forEach(['Left','Right'],function(n){
+                    vm['setDoubleAngle' + n] = function(mode){
+                        $scope['showDoubleAngle' + n] = mode;
+                    };
+                });
 
-                this.setDoubleAngle = function(type,mode){
-                    $scope['showDoubleAngle' + type] = mode;
-                };
+                $scope.$source = {};
 
-                this.addItem = function(type){
-                    $scope.$addItem(type);
-                };
-
-                this.dropItem = function(type){
-                    $scope.$dropItem(type);
-                };
+                $scope.$target = {};
 
                 $scope.$addItem = function(type){
                     
                     var cache = {};
                     var items = [];
 
-                    angular.forEach(target.data,function(item){
-                        var id = item[target.val];
+                    angular.forEach($scope.$target.data,function(item){
+                        var id = item[$scope.$target.val];
                         cache[id] = true;
                     });
 
-                    angular.forEach(source.data,function(item,index){
+                    angular.forEach($scope.$source.data,function(item,index){
 
-                        var id = item[source.val];
-                            item = angular.copy(item);
+                        var id = item[$scope.$source.val],
+                            newItem = angular.copy(item);
 
                         if((function(){
                             if(type == 'all'){
@@ -124,12 +133,25 @@
                                     return true;
                                 }
                             }else{
-                                if(source.act[index] && !cache[id]){
+                                if($scope.$source.act[index] && !cache[id]){
                                     return true;
                                 }
                             }
-                        })()){        
-                            items.push(item);
+                        })()){
+
+                            //sourcelist与targetlist的字段映射不相同需要做转换
+                            //
+                            if($scope.$source.val != $scope.$target.val){
+                                newItem[$scope.$target.val] = item[$scope.$source.val];
+                                delete newItem[$scope.$source.val];
+                            }
+
+                            if($scope.$source.name != $scope.$target.name){
+                                newItem[$scope.$target.name] = item[$scope.$source.name];
+                                delete newItem[$scope.$source.name];
+                            }
+                          
+                            items.push(newItem);
                         }
                     });
 
@@ -140,7 +162,7 @@
                     (promise = promise.then ? promise : angular.extend({},myPromise))
                     .then(function (data) {
                         angular.forEach(items,function(item){
-                            target.data.push(item);
+                            $scope.$target.data.push(item);
                         });
                     })
                     .catch(function(data){
@@ -156,9 +178,9 @@
                     var values = [];
                     var indexes = [];
 
-                    angular.forEach(target.data,function(item,index){
-                        if(type == 'all' || target.act[index]){
-                            values.push(target.data[index][target.val]);
+                    angular.forEach($scope.$target.data,function(item,index){
+                        if(type == 'all' || $scope.$target.act[index]){
+                            values.push($scope.$target.data[index][$scope.$target.val]);
                             indexes.unshift(index);
                         }
                     });
@@ -171,8 +193,8 @@
                     .then(function (data) {
 
                        angular.forEach(indexes,function(index){
-                            target.data.splice(index,1);
-                            target.act[index] = false;
+                            $scope.$target.data.splice(index,1);
+                            $scope.$target.act[index] = false;
                         });
 
                     })
@@ -193,9 +215,13 @@
 
             link:function(scope, element, attrs, listRowGroupCtrl){
 
-                listRowGroupCtrl.setSource('act',scope.active = []);
-                listRowGroupCtrl.setSource('val',scope.value);
-                listRowGroupCtrl.setDoubleAngle('Right',scope.multiple);
+                listRowGroupCtrl.setSource({
+                    'act':scope.active = [],
+                    'val':scope.value,
+                    'name':scope.name
+                });
+
+                listRowGroupCtrl.setDoubleAngleRight(scope.multiple);
 
                 scope.$watch('source',function(){       
                     angular.forEach(scope.source,function(item,index){
@@ -224,9 +250,13 @@
             
             link:function(scope, element, attrs, listRowGroupCtrl){
 
-                listRowGroupCtrl.setTarget('act',scope.active = []);
-                listRowGroupCtrl.setTarget('val',scope.value);
-                listRowGroupCtrl.setDoubleAngle('Left',scope.multiple);
+                listRowGroupCtrl.setTarget({
+                    'act':scope.active = [],
+                    'val':scope.value,
+                    'name':scope.name
+                });
+
+                listRowGroupCtrl.setDoubleAngleLeft(scope.multiple);
                 
                 scope.$watch('source',function(){
                     listRowGroupCtrl.setTarget('data',scope.source);
