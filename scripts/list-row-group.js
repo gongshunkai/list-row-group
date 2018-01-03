@@ -44,11 +44,7 @@
             scope.$selected = function(i){
 
                 if(scope.multiple){
-                    if(scope.active[i]){
-                        scope.active[i] = false;
-                    }else{
-                        scope.active[i] = true;
-                    }
+                    scope.active[i] = !scope.active[i]; 
                 }else{    
                     angular.forEach(scope.source,function(item,index){
                         scope.active[index] = false;
@@ -86,10 +82,6 @@
                 var source = {};
 
                 var target = {};
-
-                this.getText = function(){
-                    return $scope.text;
-                };
 
                 this.setSource = function(key,value){
                     source[key] = value;
